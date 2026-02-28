@@ -4,20 +4,21 @@ import re
 def clean_text(text):
     text = text.lower()
     text = re.sub(r'[^\w\s]', '', text)
+    text = re.sub(r'\d+', '', text)
     return text
 
-def generate_bag_of_words(text):
-    words = text.split()
-    bag_of_words = []
-    for word in words:
-        if word not in bag_of_words:
-            bag_of_words.append(word)
-    return bag_of_words
+def generate_vocabulary(text1, text2):
+    words1 = text1.split()
+    words2 = text2.split()
+    all_words = words1 + words2
+    vocabulary = sorted(list(set(all_words)))
+    return vocabulary
 
-def generate_vector(bag_of_words, text):
+def generate_vector(vocabulary, text):
+    words = text.split()
     vector = []
-    for word in bag_of_words:
-        word_count = text.count(word)
+    for vocab_word in vocabulary:
+        word_count = words.count(vocab_word) 
         vector.append(word_count)
     return vector
 
