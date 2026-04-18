@@ -1,0 +1,62 @@
+#!/bin/sh
+set -e
+
+if ! id -u scraping-service >/dev/null 2>&1; then
+    useradd --system --home /nonexistent --shell /usr/sbin/nologin scraping-service
+fi
+
+install -d -o scraping-service -g scraping-service /var/lib/scraping-service
+install -d -o scraping-service -g scraping-service /var/log/scraping-service
+
+chmod 755 /usr/bin/scraping-service-api /usr/bin/scraping-service-scrape
+
+VENV_DIR="/opt/scraping-service/.venv"
+REQ_FILE="/opt/scraping-service/requirements.txt"
+
+if [ ! -f "${REQ_FILE}" ]; then
+    echo "Missing requirements file: ${REQ_FILE}" >&2
+    exit 1
+fi
+
+if [ "$(stat -c %u "${REQ_FILE}")" -ne 0 ]; then
+    echo "Unexpected owner for ${REQ_FILE}; expected root-owned file" >&2
+    exit 1
+fi
+
+if [ ! -x "${VENV_DIR}/bin/python3" ] || ! "${VENV_DIR}/bin/python3" -m pip --version >/dev/null 2>&1; then
+    if ! python3 -m venv "${VENV_DIR}"; then
+        echo "Failed to create virtual environment at ${VENV_DIR}" >&2
+        exit 1
+    fi
+fi
+
+if ! "${VENV_DIR}/bin/python3" -m pip install --upgrade pip; then
+    echo "Failed to upgrade pip in ${VENV_DIR}" >&2
+    exit 1
+fi
+
+if ! "${VENV_DIR}/bin/python3" -m pip install -r "${REQ_FILE}"; then
+    echo "Failed to install Python dependencies from ${REQ_FILE}" >&2
+    exit 1
+fi
+
+if command -v systemctl >/dev/null 2>&1; then
+    systemctl daemon-reload || true
+    systemctl enable scraping-service.service || true
+    systemctl restart scraping-service.service || true
+fi
+
+if command -v ufw >/dev/null 2>&1; then
+    if ufw status | grep -q "Status: active"; then
+        PORT=8000
+        if [ -f /etc/scraping-service/scraping-service.env ]; then
+            PORT_LINE=$(grep '^SCRAPING_SERVICE_PORT=' /etc/scraping-service/scraping-service.env || true)
+            if [ -n "${PORT_LINE}" ]; then
+                PORT=$(printf "%s" "${PORT_LINE}" | cut -d= -f2)
+            fi
+        fi
+        ufw allow "${PORT}/tcp" || true
+    fi
+fi
+
+exit 0

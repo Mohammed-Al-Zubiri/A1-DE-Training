@@ -1,0 +1,22 @@
+[Unit]
+Description=Books Scraping FastAPI Service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=scraping-service
+Group=scraping-service
+EnvironmentFile=-/etc/scraping-service/scraping-service.env
+WorkingDirectory=/opt/scraping-service
+ExecStart=/usr/bin/scraping-service-api
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/var/lib/scraping-service /var/log/scraping-service
+
+[Install]
+WantedBy=multi-user.target

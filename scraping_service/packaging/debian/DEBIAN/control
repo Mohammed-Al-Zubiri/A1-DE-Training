@@ -1,0 +1,10 @@
+Package: scraping-service
+Version: 1.0.0-1
+Section: utils
+Priority: optional
+Architecture: all
+Maintainer: Mohammed Al-Zubiri
+Depends: python3 (>= 3.10), python3-venv
+Description: Books scraping pipeline and FastAPI service
+ Scrapes data from books.toscrape.com, cleans and stores records in SQLite,
+ and exposes query endpoints via FastAPI. Includes systemd service integration.

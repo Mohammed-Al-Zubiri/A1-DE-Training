@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+export PYTHONPATH=/opt/scraping-service/src
+exec /opt/scraping-service/.venv/bin/python3 -m scraping_service.cli api

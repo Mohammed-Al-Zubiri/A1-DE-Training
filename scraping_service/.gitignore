@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.venv/
+venv/
+data/*.db
+packaging/build/
+.vscode
+.mypy_cache
