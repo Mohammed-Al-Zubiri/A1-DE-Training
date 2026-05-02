@@ -60,7 +60,7 @@ dataset and a hypothetical live source.
    - Clean city names (normalise ASCII‑accented characters).
    - Map natural keys (`customer_id`, `seller_id`, `product_id`) to surrogate
      keys from the dimension tables.
-   - For SCD Type 2 products, select the version active at the time of the
+   - For SCD Type2 products, select the version active at the time of the
      transaction.
    - Deduplicate `review_id` records (keep earliest by `review_creation_date`).
    - Flag zero‑value payments and normalise `payment_installments` (0 → 1).
@@ -68,7 +68,7 @@ dataset and a hypothetical live source.
      row (`seller_key = -1`).
 
 3. **Load:**
-   - Dimensions are loaded first (static → Type 1 → Type 2) to ensure all
+   - Dimensions are loaded first (static → Type1 → Type2) to ensure all
      surrogate keys exist before fact loading.
    - Fact tables are loaded using `INSERT ... ON CONFLICT DO NOTHING` for
      idempotent inserts (except `fact_order_fulfillment`, which uses an
@@ -94,12 +94,12 @@ by its own fact table with a clearly declared grain:
 - `dim_date` – Role‑played for purchase, approval, shipping, delivery, etc.
 - `dim_location` – Built from cleaned customer/seller ZIP codes; used for origin
   and destination in logistics facts.
-- `dim_customer` – Type 1 (current snapshot); transaction‑time location is stored
+- `dim_customer` – Type1 (current snapshot); transaction‑time location is stored
   in the facts.
-- `dim_seller` – Type 1; enriched with business attributes from `leads_closed`.
-- `dim_product` – Type 2; tracks category and physical attribute changes.
+- `dim_seller` – Type1; enriched with business attributes from `leads_closed`.
+- `dim_product` – Type2; tracks category and physical attribute changes.
 - `dim_payment_type` – Static lookup.
-- `dim_lead` – Type 1; holds lead attributes and declared metrics.
+- `dim_lead` – Type1; holds lead attributes and declared metrics.
 
 ### Slowly Changing Dimension Strategies
 
@@ -189,7 +189,7 @@ by its own fact table with a clearly declared grain:
 - **Trade‑off:** No seller key in `fact_order_fulfillment` – seller‑level
   delivery analysis requires a join to `fact_sales`. This keeps the order‑level
   grain pure.
-- **Trade‑off:** SCD Type 1 for customers/sellers – we sacrifice historical
+- **Trade‑off:** SCD Type1 for customers/sellers – we sacrifice historical
   location tracking for entity simplicity, compensated by transaction‑time
   location keys in the fact tables.
 - **Trade‑off:** Pre‑computed delivery metrics add a slight ETL cost and storage

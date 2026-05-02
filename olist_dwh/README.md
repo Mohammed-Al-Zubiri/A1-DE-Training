@@ -3,6 +3,9 @@
 A production‑ready Kimball‑style data warehouse for the Brazilian Olist e‑commerce
 dataset, built with PostgreSQL and an incremental Python ETL pipeline.
 
+## DWH Modeling
+![DWH Schema](docs/dwh_schema.jpg)
+
 ## Architecture
 
 - **Source**: SQLite OLTP database (Olist dataset from Kaggle)
@@ -18,7 +21,7 @@ olist-dwh/
 ├── requirements.txt
 ├── docs/
 │   ├── architecture.md
-│   ├── data_model.md
+│   ├── dwh_schema.jpg
 │   └── assumptions_and_tradeoffs.md
 ├── sql/
 │   ├── create_schema.sql
