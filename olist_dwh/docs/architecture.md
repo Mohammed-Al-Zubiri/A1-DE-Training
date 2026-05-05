@@ -14,26 +14,29 @@ dataset and a hypothetical live source.
 
 ## High‑Level Architecture Diagram
 
-```
-┌──────────────┐      ┌─────────────────────────────────────────────────┐
-│   Olist      │      │                   Python ETL                    │
-│   SQLite     │─────▶│  ┌─────────┐  ┌─────────┐  ┌─────────┐         │
-│   (OLTP)     │      │  │ Extract │─▶│Transform│─▶│  Load   │         │
-└──────────────┘      │  └─────────┘  └─────────┘  └─────────┘         │
-                      │       │             │             │             │
-                      │   ┌───▼───┐    ┌────▼────┐   ┌───▼────────┐    │
-                      │   │SQLite │    │Cleaning │   │  PostgreSQL │    │
-                      │   │read   │    │surrogate│   │  insert/   │    │
-                      │   │query  │    │mapping  │   │  upsert    │    │
-                      │   │+waterm│    │dedup    │   │  commit    │    │
-                      │   └───────┘    └─────────┘   └────────────┘    │
-                      └─────────────────────────────────────────────────┘
-                                           │
-                                           ▼
-                                   ┌───────────────┐
-                                   │  PostgreSQL    │
-                                   │  Data Warehouse│
-                                   └───────────────┘
+```mermaid
+graph TD
+    Source[(Olist SQLite<br>OLTP)]
+    
+    subgraph Python ["Python ETL"]
+        direction LR
+        Extract[Extract] --> Transform[Transform]
+        Transform --> Load[Load]
+        
+        Extract_det[SQLite read query<br>+ watermarks]
+        Transform_det[Cleaning<br>Surrogate mapping]
+        Load_det[PostgreSQL<br>insert/upsert<br>commit]
+        
+        Extract -.-> Extract_det
+        Transform -.-> Transform_det
+        Load -.-> Load_det
+    end
+    
+    Source ==>|Extracts| Extract
+    Load ==>|Loads| Target[(PostgreSQL<br>Data Warehouse)]
+    
+    style Source fill:#f9dbf9,stroke:#333,stroke-width:2px
+    style Target fill:#cce5ff,stroke:#333,stroke-width:2px
 ```
 
 ## Technology Stack
@@ -62,7 +65,7 @@ dataset and a hypothetical live source.
      keys from the dimension tables.
    - For SCD Type2 products, select the version active at the time of the
      transaction.
-   - Deduplicate `review_id` records (keep earliest by `review_creation_date`).
+   - Look up text strings to find or insert their unique surrogate key in `dim_review_comment`.
    - Flag zero‑value payments and normalise `payment_installments` (0 → 1).
    - Map orphaned `seller_id` in `leads_closed` to a special “Unknown” seller
      row (`seller_key = -1`).
@@ -95,11 +98,12 @@ by its own fact table with a clearly declared grain:
 - `dim_location` – Built from cleaned customer/seller ZIP codes; used for origin
   and destination in logistics facts.
 - `dim_customer` – Type1 (current snapshot); transaction‑time location is stored
-  in the facts.
+  in the facts. Natural key is `customer_unique_id`.
 - `dim_seller` – Type1; enriched with business attributes from `leads_closed`.
 - `dim_product` – Type2; tracks category and physical attribute changes.
 - `dim_payment_type` – Static lookup.
-- `dim_lead` – Type1; holds lead attributes and declared metrics.
+- `dim_lead` – Type1; holds lead attributes and discrete qualitative bands (e.g. `catalog_size_band`, `revenue_band`).
+- `dim_review_comment` - Static lookup; holds the raw textual contents for reviews without keeping bulky text in the fact tables.
 
 ### Slowly Changing Dimension Strategies
 
@@ -108,6 +112,7 @@ by its own fact table with a clearly declared grain:
 | `dim_date` | 0 | Immutable calendar |
 | `dim_location` | 0 | Static geographic data |
 | `dim_payment_type` | 0 | Fixed domain |
+| `dim_review_comment` | 0 | Unique combinations of text entries |
 | `dim_customer` | 1 | Overwrite on change; current address only |
 | `dim_seller` | 1 | Overwrite on change; current business info |
 | `dim_lead` | 1 | Latest lead attributes only |
@@ -158,8 +163,7 @@ by its own fact table with a clearly declared grain:
 
 ## Data Quality Handling
 
-- **Duplicate `review_id`** – Deduplicated during transform (keep earliest by
-  `review_creation_date`).
+- **Handling Duplicate `review_id`** – Allowed naturally into the sequence with surrogate text comments via `dim_review_comment`.
 - **Orphaned sellers in `leads_closed`** – Mapped to a dedicated “Unknown” seller
   row (`seller_key = -1`) to avoid FK violations and data loss.
 - **Missing product categories** – Inserted manually into the source translation

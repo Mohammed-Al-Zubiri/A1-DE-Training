@@ -51,19 +51,18 @@ olist-dwh/
 3. **Configure database connections** in `etl/config.py`.
 4. **Run the ETL pipeline**:
    ```bash
-   cd etl
-   python pipeline.py
+   python -m etl.pipeline
    ```
 5. **Run sample analytical queries** from `sql/analytical_queries.sql`.
 
 ## Features
 
 - **Five star‑schema fact tables**: sales, order fulfillment, payments, reviews, seller leads
-- **Seven conformed dimensions**: date, location, customer, seller, product, payment type, lead
+- **Eight conformed dimensions**: date, location, customer, seller, product, payment type, lead, review comment
 - **Type‑2 slowly‑changing dimension** for products
 - **Type‑1 dimensions** for customers, sellers, leads
 - **Incremental loading** with watermark tracking
-- **Data quality handling**: deduplication, orphaned records, missing values
+- **Data quality handling**: deduplication, orphaned records, missing values, mapped identifiers
 - **Idempotent reruns**
 - **Performance indexes** on all foreign keys and filter columns
 

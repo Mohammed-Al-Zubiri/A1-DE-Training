@@ -26,10 +26,7 @@ query convenience).
    data from `customers` and `sellers`.
 
 3. **Duplicate `review_id` values**
-   The `order_reviews` table contains 789 duplicate `review_id` records. We
-   treat these as an import artefact and deduplicate by keeping the earliest
-   `review_creation_date`. We assume no genuine review with the same ID exists
-   across different orders (the composite key `(review_id, order_id)` is unique).
+   The `order_reviews` table contains 789 duplicate `review_id` records, which originate because a customer can post a single review across multiple distinct order items. We treat these differently now by avoiding artificial deduplication; instead mapping each distinct order constraint against a shared `dim_review_comment` payload entity. Note that the composite key `(review_id, order_id)` acts as the natural unique constraint.
 
 4. **Orphaned sellers in `leads_closed`**
    462 of 842 closed leads reference a `seller_id` that does not exist in the
@@ -221,14 +218,11 @@ to the fact table columns.
 
 ---
 
-### 11. Python + psycopg2 vs. Apache Airflow / dbt
+### 12. Continuous Metrics Moving to Facts
+**Decision:** Continuous numerical attributes (`declared_product_catalog_size`, `declared_monthly_revenue`) were shifted out of `dim_lead` and pushed down into `fact_seller_leads`. The original dimension locations were replaced with banded categories.
 
-**Decision:** Pure Python ETL orchestration with `psycopg2`.
+**Why:** Proper Kimball modelling insists dimensions be kept for slicing, dicing, and grouping qualitative bands, whereas completely continuous infinite numerical domains risk bloating the dimension or leading to poor surrogate mapping. We store them natively in the fact table where they can be quickly summed or averaged.
 
-**Why:** Minimises dependencies and infrastructure. For a standalone assignment,
-a simple Python script is more transparent and reproducible than a full scheduling
-framework.
+**Trade‑off:** A marginally wider fact table layout vs the ability to do unbounded continuous aggregations directly against the leads pipeline.
 
-**Trade‑off:** No built‑in retries, scheduling GUI, or lineage tracking. In a
-production environment, migrating the same SQL logic to Airflow + dbt would add
-robustness without changing the dimensional model.
+---

@@ -195,7 +195,8 @@ CREATE TABLE fact_reviews (
     review_creation_date_key    INTEGER     NOT NULL REFERENCES dim_date(date_key),
     review_answer_date_key      INTEGER     REFERENCES dim_date(date_key),   -- nullable if no answer
     review_score                INTEGER     NOT NULL,
-    review_comment_key          INTEGER     NOT NULL REFERENCES dim_review_comment(review_comment_key)
+    review_comment_key          INTEGER     NOT NULL REFERENCES dim_review_comment(review_comment_key),
+    UNIQUE (review_id, order_id)
 );
 CREATE INDEX idx_fact_rev_customer ON fact_reviews(customer_key);
 CREATE INDEX idx_fact_rev_order    ON fact_reviews(order_id);
