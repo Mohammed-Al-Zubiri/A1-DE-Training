@@ -1,0 +1,217 @@
+{
+  "id": "c6613ff4-659d-4a4f-9c41-7421da3707a1",
+  "externalControllerServiceReferences": {
+    "50854632-96b0-322f-a595-123576a26982": {
+      "identifier": "50854632-96b0-322f-a595-123576a26982",
+      "name": "Kafka3ConnectionService"
+    }
+  },
+  "parameterContexts": {},
+  "parameterProviders": {},
+  "processGroups": [],
+  "remoteProcessGroups": [],
+  "processors": [
+    {
+      "identifier": "0ca48ff1-3b41-35ce-92e4-9ff162be351f",
+      "instanceIdentifier": "3aeda7a4-019e-1000-8d32-1fd0590ce41b",
+      "name": "ConsumeKafka",
+      "comments": "",
+      "position": {
+        "x": -1096,
+        "y": 368
+      },
+      "type": "org.apache.nifi.kafka.processors.ConsumeKafka",
+      "bundle": {
+        "group": "org.apache.nifi",
+        "artifact": "nifi-kafka-nar",
+        "version": "2.9.0"
+      },
+      "properties": {
+        "Topics": "ecommerce_json_events",
+        "Commit Offsets": "true",
+        "Header Name Pattern": null,
+        "Header Name Prefix": null,
+        "Key Format": "byte-array",
+        "Key Record Reader": null,
+        "Message Demarcator": null,
+        "Record Reader": null,
+        "Key Attribute Encoding": "utf-8",
+        "Max Uncommitted Size": null,
+        "Topic Format": "names",
+        "Header Encoding": "UTF-8",
+        "Max Uncommitted Time": "100 millis",
+        "Kafka Connection Service": "50854632-96b0-322f-a595-123576a26982",
+        "Separate By Key": "false",
+        "Processing Strategy": "FLOW_FILE",
+        "Record Writer": null,
+        "Group ID": "nifi_hdfs_writer_group",
+        "auto.offset.reset": "earliest",
+        "Output Strategy": "USE_VALUE"
+      },
+      "propertyDescriptors": {
+        "Topics": {
+          "name": "Topics",
+          "displayName": "Topics",
+          "identifiesControllerService": false,
+          "sensitive": false,
+          "dynamic": false
+        },
+        "Commit Offsets": {
+          "name": "Commit Offsets",
+          "displayName": "Commit Offsets",
+          "identifiesControllerService": false,
+          "sensitive": false,
+          "dynamic": false
+        },
+        "Header Name Pattern": {
+          "name": "Header Name Pattern",
+          "displayName": "Header Name Pattern",
+          "identifiesControllerService": false,
+          "sensitive": false,
+          "dynamic": false
+        },
+        "Header Name Prefix": {
+          "name": "Header Name Prefix",
+          "displayName": "Header Name Prefix",
+          "identifiesControllerService": false,
+          "sensitive": false,
+          "dynamic": false
+        },
+        "Key Format": {
+          "name": "Key Format",
+          "displayName": "Key Format",
+          "identifiesControllerService": false,
+          "sensitive": false,
+          "dynamic": false
+        },
+        "Key Record Reader": {
+          "name": "Key Record Reader",
+          "displayName": "Key Record Reader",
+          "identifiesControllerService": true,
+          "sensitive": false,
+          "dynamic": false
+        },
+        "Message Demarcator": {
+          "name": "Message Demarcator",
+          "displayName": "Message Demarcator",
+          "identifiesControllerService": false,
+          "sensitive": false,
+          "dynamic": false
+        },
+        "Record Reader": {
+          "name": "Record Reader",
+          "displayName": "Record Reader",
+          "identifiesControllerService": true,
+          "sensitive": false,
+          "dynamic": false
+        },
+        "Key Attribute Encoding": {
+          "name": "Key Attribute Encoding",
+          "displayName": "Key Attribute Encoding",
+          "identifiesControllerService": false,
+          "sensitive": false,
+          "dynamic": false
+        },
+        "Max Uncommitted Size": {
+          "name": "Max Uncommitted Size",
+          "displayName": "Max Uncommitted Size",
+          "identifiesControllerService": false,
+          "sensitive": false,
+          "dynamic": false
+        },
+        "Topic Format": {
+          "name": "Topic Format",
+          "displayName": "Topic Format",
+          "identifiesControllerService": false,
+          "sensitive": false,
+          "dynamic": false
+        },
+        "Header Encoding": {
+          "name": "Header Encoding",
+          "displayName": "Header Encoding",
+          "identifiesControllerService": false,
+          "sensitive": false,
+          "dynamic": false
+        },
+        "Max Uncommitted Time": {
+          "name": "Max Uncommitted Time",
+          "displayName": "Max Uncommitted Time",
+          "identifiesControllerService": false,
+          "sensitive": false,
+          "dynamic": false
+        },
+        "Kafka Connection Service": {
+          "name": "Kafka Connection Service",
+          "displayName": "Kafka Connection Service",
+          "identifiesControllerService": true,
+          "sensitive": false,
+          "dynamic": false
+        },
+        "Separate By Key": {
+          "name": "Separate By Key",
+          "displayName": "Separate By Key",
+          "identifiesControllerService": false,
+          "sensitive": false,
+          "dynamic": false
+        },
+        "Processing Strategy": {
+          "name": "Processing Strategy",
+          "displayName": "Processing Strategy",
+          "identifiesControllerService": false,
+          "sensitive": false,
+          "dynamic": false
+        },
+        "Record Writer": {
+          "name": "Record Writer",
+          "displayName": "Record Writer",
+          "identifiesControllerService": true,
+          "sensitive": false,
+          "dynamic": false
+        },
+        "Group ID": {
+          "name": "Group ID",
+          "displayName": "Group ID",
+          "identifiesControllerService": false,
+          "sensitive": false,
+          "dynamic": false
+        },
+        "auto.offset.reset": {
+          "name": "auto.offset.reset",
+          "displayName": "Auto Offset Reset",
+          "identifiesControllerService": false,
+          "sensitive": false,
+          "dynamic": false
+        },
+        "Output Strategy": {
+          "name": "Output Strategy",
+          "displayName": "Output Strategy",
+          "identifiesControllerService": false,
+          "sensitive": false,
+          "dynamic": false
+        }
+      },
+      "style": {},
+      "schedulingPeriod": "1 sec",
+      "schedulingStrategy": "TIMER_DRIVEN",
+      "executionNode": "ALL",
+      "penaltyDuration": "30 sec",
+      "yieldDuration": "1 sec",
+      "bulletinLevel": "WARN",
+      "runDurationMillis": 0,
+      "concurrentlySchedulableTaskCount": 1,
+      "autoTerminatedRelationships": [],
+      "scheduledState": "ENABLED",
+      "retryCount": 10,
+      "retriedRelationships": [],
+      "backoffMechanism": "PENALIZE_FLOWFILE",
+      "maxBackoffPeriod": "10 mins",
+      "componentType": "PROCESSOR",
+      "groupIdentifier": "6fceb38b-37ca-3346-8799-0242725e4f51"
+    }
+  ],
+  "inputPorts": [],
+  "outputPorts": [],
+  "connections": [],
+  "labels": [],
+  "funnels": []
+}
